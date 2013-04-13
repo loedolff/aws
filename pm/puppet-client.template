@@ -1,7 +1,7 @@
 {
   "AWSTemplateFormatVersion" : "2010-09-09",
 
-  "Description": "Sample template to install a Puppet client.",
+  "Description": "Puppet Client",
 
   "Parameters" : {
     "PuppetClientSecurityGroup": {
@@ -11,35 +11,37 @@
     }
   },
 
-  "Ec2SecurityGroup" : {
-    "Type" : "AWS::EC2::SecurityGroup",
-    "Properties" : {
-      "GroupDescription" : "HTTP and SSH access",
-      "SecurityGroupIngress" : [ {
-          "IpProtocol" : "tcp", 
-          "FromPort" : "22", 
-          "ToPort" : "22", 
-          "CidrIp" : "0.0.0.0/0" 
-        }, {
-          "IpProtocol" : "tcp",
-          "FromPort" : "80",
-          "ToPort" : "80",
-          "CidrIp" : "0.0.0.0/0"
-        }
-      ]
-    }
-  }, 
+  "Resources" : {
 
-  "PuppetClient": {
-    "Type": "AWS::EC2::Instance",
-    "Properties": {
-      "ImageId" : "ami-ecbe2adc",
-      "InstanceType" : "t1.micro",
-      "KeyName" : "mykeypair",
-      "SecurityGroups": [ { "Ref": "PuppetClientSecurityGroup" }, { "Ref" : "EC2SecurityGroup" } ]
+    "EC2SecurityGroup" : {
+      "Type" : "AWS::EC2::SecurityGroup",
+      "Properties" : {
+        "GroupDescription" : "HTTP and SSH access",
+        "SecurityGroupIngress" : [ {
+            "IpProtocol" : "tcp", 
+            "FromPort" : "22", 
+            "ToPort" : "22", 
+            "CidrIp" : "0.0.0.0/0" 
+          }, {
+            "IpProtocol" : "tcp",
+            "FromPort" : "80",
+            "ToPort" : "80",
+            "CidrIp" : "0.0.0.0/0"
+          }
+        ]
+      }
+    }, 
+
+    "PuppetClient": {
+      "Type": "AWS::EC2::Instance",
+      "Properties": {
+        "ImageId" : "ami-ecbe2adc",
+        "InstanceType" : "t1.micro",
+        "KeyName" : "mykeypair",
+        "SecurityGroups": [ { "Ref": "PuppetClientSecurityGroup" }, { "Ref" : "EC2SecurityGroup" } ]
+      }
     }
   },
-
    
   "Outputs" : {
     "PuppetClientPrivateDNS" : {
@@ -49,7 +51,7 @@
     "PuppetClientPublicDNS" : {
       "Value" : { "Fn::GetAtt" : [ "PuppetClient", "PublicDnsName" ] },
       "Description" : "Public Name of PuppetMaster"
-    },
+    }
   }
 
 }
