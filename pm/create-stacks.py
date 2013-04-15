@@ -1,25 +1,56 @@
 import subprocess
 import random
 import string
+import time
+import re
 
 STACK_NAME='stack1'
-#STACK_NAME='stack'.join(random.sample(string.lowercase, 3))
+#global STACK_NAME='stack'.join(random.sample(string.lowercase, 3))
 
+# run a shell command
 def run_command(command):
   p = subprocess.Popen(
     command,
     stdout=subprocess.PIPE,
     stderr=subprocess.STDOUT,
     shell=True)
+  output = [] 
   for line in iter(p.stdout.readline, b''):
     print line
+    output.append(line)
+  return "\n".join(output)
 
 # create puppet master stack
 def create_stack():
   return run_command(
     ["cfn-create-stack " + STACK_NAME + " -f puppet-master.template"])
 
+# get puppet_master name
+def get_identifiers(stack_description):
+  global puppet_master
+  global security_group
+  m = re.match(r".*PuppetMasterPublicDNSName=(.*);PuppetClientSecurityGroup=(.*) .*", stack_description)
+  if m is not None:
+    puppet_master = m.group(1)
+    security_group = m.group(2)
+  else:
+    raise Exception('Could not read Puppet Master or Security Group names', stack_description)
+
 # wait for completion
+def wait_for_completion():
+  for i in range(10):
+    output = run_command(["cfn-describe-stacks " + STACK_NAME])
+    if "CREATE_COMPLETE" in output:
+      break
+    time.sleep(10)
+  get_identifiers(output)
+
+# test ssh
+
+def test_ssh():
+  run_command('ssh -t -o "StrictHostKeyChecking no" -i ~/.ssh/mykeypair.pem ' + 
+    "ec2-user@" + puppet_master + " ls -al")
+
 # get security group from description
 # start creating client stack
 
@@ -34,9 +65,12 @@ def create_stack():
 # do puppet run on client
  
 try:
-  create_stack()
-except Exception as inst:
-  print "here"
-  print inst
-  print "and here"
+#  create_stack()
+  wait_for_completion()
+#  get_identifiers("PuppetMasterPublicDNSName=ec2-54-245-162-240.us-west-2.compute.amazonaws.com;PuppetClientSecurityGroup=stack1-PuppetClientSecurityGroup-1TPGO47TJ2ZRY")
+  print "Puppet Master: ", puppet_master
+  print "Security Group: ", security_group
+  test_ssh();
+except Exception as instance:
+  print instance
 
