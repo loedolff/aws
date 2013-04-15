@@ -4,8 +4,8 @@ import string
 import time
 import re
 
-STACK_NAME='stack1'
-#global STACK_NAME='stack'.join(random.sample(string.lowercase, 3))
+# STACK_NAME='yjd'
+STACK_NAME= ''.join(random.sample(string.lowercase, 3))
 
 # run a shell command
 def run_command(command):
@@ -48,8 +48,13 @@ def wait_for_completion():
 # test ssh
 
 def test_ssh():
-  run_command('ssh -t -o "StrictHostKeyChecking no" -i ~/.ssh/mykeypair.pem ' + 
-    "ec2-user@" + puppet_master + " ls -al")
+  for i in range(10):
+    output = run_command('ssh -t -o "StrictHostKeyChecking no" -i ~/.ssh/mykeypair.pem ' + 
+      "ec2-user@" + puppet_master + " ls -al")
+    if 'Connection refused' not in output:
+      break
+    time.sleep(5)
+  print '-----------------------'
 
 # get security group from description
 # start creating client stack
@@ -65,9 +70,8 @@ def test_ssh():
 # do puppet run on client
  
 try:
-#  create_stack()
+  create_stack()
   wait_for_completion()
-#  get_identifiers("PuppetMasterPublicDNSName=ec2-54-245-162-240.us-west-2.compute.amazonaws.com;PuppetClientSecurityGroup=stack1-PuppetClientSecurityGroup-1TPGO47TJ2ZRY")
   print "Puppet Master: ", puppet_master
   print "Security Group: ", security_group
   test_ssh();
