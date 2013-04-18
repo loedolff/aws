@@ -48,13 +48,12 @@ def wait_for_completion():
 # test ssh
 
 def test_ssh():
-  for i in range(10):
+  for i in range(20):
     output = run_command('ssh -t -o "StrictHostKeyChecking no" -i ~/.ssh/mykeypair.pem ' + 
       "ec2-user@" + puppet_master + " ls -al")
     if 'Connection refused' not in output:
       break
     time.sleep(5)
-  print '-----------------------'
 
 # get security group from description
 # start creating client stack
