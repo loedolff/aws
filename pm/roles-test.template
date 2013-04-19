@@ -1,6 +1,25 @@
 {
    "AWSTemplateFormatVersion": "2010-09-09",
    "Resources": {
+    "Ec2SecurityGroup" : {
+      "Type" : "AWS::EC2::SecurityGroup",
+      "Properties" : {
+        "GroupDescription" : "HTTP and SSH access",
+        "SecurityGroupIngress" : [ {
+            "IpProtocol" : "tcp",
+            "FromPort" : "22",
+            "ToPort" : "22",
+            "CidrIp" : "0.0.0.0/0"
+          }, {
+            "IpProtocol" : "tcp",
+            "FromPort" : "80",
+            "ToPort" : "80",
+            "CidrIp" : "0.0.0.0/0"
+          }
+        ]
+      }
+    },
+
       "myEC2Instance": {
          "Type": "AWS::EC2::Instance",
          "Version": "2009-05-15",
@@ -8,6 +27,8 @@
             "ImageId" : "ami-ecbe2adc",
             "InstanceType" : "t1.micro",
             "Monitoring": "true",
+            "KeyName" : "mykeypair",
+            "SecurityGroups" : [ { "Ref" : "Ec2SecurityGroup" } ],
             "DisableApiTermination": "false",
             "IamInstanceProfile": {
                "Ref": "RootInstanceProfile"
@@ -50,5 +71,14 @@
             "Roles": [ { "Ref": "RootRole" } ]
          }
       }
-   }
+   },
+
+   "Outputs" : {
+    "myEC2Instance" : {
+      "Value" : { "Fn::GetAtt" : [ "myEC2Instance", "PublicDnsName" ] },
+      "Description" : "Public Name of myEC2Instance"
+    }
+  }
+
+
 }  
