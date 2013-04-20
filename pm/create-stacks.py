@@ -6,6 +6,7 @@ import re
 import os
 import traceback
 import sys
+import stat
 
 STACK_NAME='bbb'
 # STACK_NAME= ''.join(random.sample(string.lowercase, 3))
@@ -48,6 +49,14 @@ def wait_for_completion():
     time.sleep(10)
   get_identifiers(output)
 
+def write_go_pm_script():
+  """"write a convenience shell script to log into puppet master"""
+  f = open('go-pm.sh', 'w')
+  f.write('ssh -t -o "StrictHostKeyChecking no" -i ~/.ssh/mykeypair.pem ' +
+    'ec2-user@' + puppet_master + ' "$1"')
+  os.chmod('go-pm.sh', stat.S_IRWXU)
+  f.close()
+
 def run_ssh_command(command):
   """run an ssh command"""
   return run_command('ssh -t -o "StrictHostKeyChecking no" -i ~/.ssh/mykeypair.pem ' + 
@@ -71,6 +80,7 @@ def set_cfn_credentials():
 # log into puppet master and install PM 3
 # get PM configuration from SCM
 # run update on PM so it can configure itself (?)
+# install mcollective
 
 # wait for client to complete
 # log into client and install puppet 3 client 
@@ -85,10 +95,11 @@ def set_cfn_credentials():
 try:
   create_stack()
   wait_for_completion()
-  print "Puppet Master: ", puppet_master
-  print "Security Group: ", security_group
+  write_go_pm_script()
   wait_for_ssh();
   set_cfn_credentials();
+  print "Puppet Master: ", puppet_master
+  print "Security Group: ", security_group
 except Exception as instance:
   print traceback.format_exc()
 
