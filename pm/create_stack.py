@@ -80,7 +80,7 @@ def write_ss_pm_script():
   f = open(get_output_dir() + 'ss-pm.sh', 'w')
   f.write('scp -i ~/.ssh/mykeypair.pem $1 ec2-user@' + puppet_master + ":temp/\n")
   f.write('ssh -t -o "StrictHostKeyChecking no" -i ~/.ssh/mykeypair.pem ' +
-    'ec2-user@' + puppet_master + ' temp/$1\n')
+    'ec2-user@' + puppet_master + ' temp/`basename $1`\n')
   os.chmod(f.name, stat.S_IRWXU)
   f.close()
   
