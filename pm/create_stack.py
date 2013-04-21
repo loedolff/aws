@@ -42,19 +42,27 @@ def get_identifiers(stack_description):
 
 def wait_for_completion():
   """wait for stack creation to complete"""
-  for i in range(20):
+  for i in range(100):
     output = run_command(["cfn-describe-stacks " + STACK_NAME])
     if "CREATE_COMPLETE" in output:
       break
-    time.sleep(10)
+    time.sleep(15)
   get_identifiers(output)
+
+
+def get_output_dir():
+  return 'stacks/' + STACK_NAME + '/'
+
+def make_output_dir():
+  if not os.path.exists(get_output_dir()):
+    os.makedirs(get_output_dir())
 
 def write_go_pm_script():
   """"write a convenience shell script to log into puppet master"""
-  f = open('go-pm.sh', 'w')
+  f = open(get_output_dir() + 'go-pm.sh', 'w')
   f.write('ssh -t -o "StrictHostKeyChecking no" -i ~/.ssh/mykeypair.pem ' +
     'ec2-user@' + puppet_master + ' "$1"')
-  os.chmod('go-pm.sh', stat.S_IRWXU)
+  os.chmod(f.name, stat.S_IRWXU)
   f.close()
 
 def run_ssh_command(command):
@@ -72,8 +80,8 @@ def wait_for_ssh():
 
 def set_cfn_credentials():
   """write the CFN credentials into .bashrc on remote host"""
-  run_ssh_command("echo EXPORT CFN_ACCESS_KEY=" + os.environ.get('CFN_ACCESS_KEY') + " >> .bashrc")
-  run_ssh_command("echo EXPORT CFN_SECRET_KEY=" + os.environ.get('CFN_SECRET_KEY') + " >> .bashrc")
+  run_ssh_command("echo export CFN_ACCESS_KEY=" + os.environ.get('CFN_ACCESS_KEY') + " >> .bashrc")
+  run_ssh_command("echo export CFN_SECRET_KEY=" + os.environ.get('CFN_SECRET_KEY') + " >> .bashrc")
 
 # start creating client stack
 
@@ -93,8 +101,9 @@ def set_cfn_credentials():
 # would be nice to create a script to easily ssh to new instance.  hey, that's related to previous statement :-)
  
 try:
-  create_stack()
+#  create_stack()
   wait_for_completion()
+  make_output_dir();
   write_go_pm_script()
   wait_for_ssh();
   set_cfn_credentials();
