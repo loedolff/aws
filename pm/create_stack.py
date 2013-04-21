@@ -65,6 +65,19 @@ def write_go_pm_script():
   os.chmod(f.name, stat.S_IRWXU)
   f.close()
 
+def write_run_script():
+  """write a convenience shell script to copy a local file to the remote and run it"""
+  # make remote 'temp' dir
+  run_ssh_command("mkdir temp"); 
+  # write script to copy a local script to remote 'temp' and then execute it
+  f = open(get_output_dir() + 'run_script.sh', 'w')
+  f.write('scp -i ~/.ssh/mykeypair.pem $1 ec2-user@' + puppet_master + ":temp/\n")
+  f.write('ssh -t -o "StrictHostKeyChecking no" -i ~/.ssh/mykeypair.pem ' +
+    'ec2-user@' + puppet_master + ' temp/$1\n')
+  os.chmod(f.name, stat.S_IRWXU)
+  f.close()
+  
+
 def run_ssh_command(command):
   """run an ssh command"""
   return run_command('ssh -t -o "StrictHostKeyChecking no" -i ~/.ssh/mykeypair.pem ' + 
@@ -103,10 +116,11 @@ def set_cfn_credentials():
 try:
 #  create_stack()
   wait_for_completion()
-  make_output_dir();
+  make_output_dir()
   write_go_pm_script()
+  write_run_script()
   wait_for_ssh();
-  set_cfn_credentials();
+  set_cfn_credentials()
   print "Puppet Master: ", puppet_master
   print "Security Group: ", security_group
 except Exception as instance:
