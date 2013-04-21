@@ -57,20 +57,27 @@ def make_output_dir():
   if not os.path.exists(get_output_dir()):
     os.makedirs(get_output_dir())
 
-def write_go_pm_script():
+def write_ssh_pm_script():
   """"write a convenience shell script to log into puppet master"""
-  f = open(get_output_dir() + 'go-pm.sh', 'w')
+  f = open(get_output_dir() + 'ssh-pm.sh', 'w')
   f.write('ssh -t -o "StrictHostKeyChecking no" -i ~/.ssh/mykeypair.pem ' +
     'ec2-user@' + puppet_master + ' "$1"')
   os.chmod(f.name, stat.S_IRWXU)
   f.close()
 
-def write_run_script():
+def write_scp_pm_script():
+  """"write a convenience shell script to copy a file to the puppet master"""
+  f = open(get_output_dir() + 'scp-pm.sh', 'w')
+  f.write('scp -i ~/.ssh/mykeypair.pem $1 ec2-user@' + puppet_master + ":temp/\n")
+  os.chmod(f.name, stat.S_IRWXU)
+  f.close()
+
+def write_ss_pm_script():
   """write a convenience shell script to copy a local file to the remote and run it"""
   # make remote 'temp' dir
   run_ssh_command("mkdir temp"); 
   # write script to copy a local script to remote 'temp' and then execute it
-  f = open(get_output_dir() + 'run_script.sh', 'w')
+  f = open(get_output_dir() + 'ss-pm.sh', 'w')
   f.write('scp -i ~/.ssh/mykeypair.pem $1 ec2-user@' + puppet_master + ":temp/\n")
   f.write('ssh -t -o "StrictHostKeyChecking no" -i ~/.ssh/mykeypair.pem ' +
     'ec2-user@' + puppet_master + ' temp/$1\n')
@@ -117,8 +124,9 @@ try:
 #  create_stack()
   wait_for_completion()
   make_output_dir()
-  write_go_pm_script()
-  write_run_script()
+  write_ssh_pm_script()
+  write_scp_pm_script()
+  write_ss_pm_script()
   wait_for_ssh();
   set_cfn_credentials()
   print "Puppet Master: ", puppet_master
