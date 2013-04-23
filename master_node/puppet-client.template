@@ -1,0 +1,57 @@
+{
+  "AWSTemplateFormatVersion" : "2010-09-09",
+
+  "Description": "Puppet Client",
+
+  "Parameters" : {
+    "PuppetClientSecurityGroup": {
+      "Default": "default",
+      "Description" : "The EC2 security group that contains instances that need access to the database",
+      "Type": "String"
+    }
+  },
+
+  "Resources" : {
+
+    "EC2SecurityGroup" : {
+      "Type" : "AWS::EC2::SecurityGroup",
+      "Properties" : {
+        "GroupDescription" : "HTTP and SSH access",
+        "SecurityGroupIngress" : [ {
+            "IpProtocol" : "tcp", 
+            "FromPort" : "22", 
+            "ToPort" : "22", 
+            "CidrIp" : "0.0.0.0/0" 
+          }, {
+            "IpProtocol" : "tcp",
+            "FromPort" : "80",
+            "ToPort" : "80",
+            "CidrIp" : "0.0.0.0/0"
+          }
+        ]
+      }
+    }, 
+
+    "PuppetClient": {
+      "Type": "AWS::EC2::Instance",
+      "Properties": {
+        "ImageId" : "ami-ecbe2adc",
+        "InstanceType" : "t1.micro",
+        "KeyName" : "mykeypair",
+        "SecurityGroups": [ { "Ref": "PuppetClientSecurityGroup" }, { "Ref" : "EC2SecurityGroup" } ]
+      }
+    }
+  },
+   
+  "Outputs" : {
+    "PuppetClientPrivateDNS" : {
+      "Value" : { "Fn::GetAtt" : [ "PuppetClient", "PrivateDnsName" ] },
+      "Description" : "Private DNS Name of PuppetMaster"
+    },
+    "PuppetClientPublicDNS" : {
+      "Value" : { "Fn::GetAtt" : [ "PuppetClient", "PublicDnsName" ] },
+      "Description" : "Public Name of PuppetMaster"
+    }
+  }
+
+}
