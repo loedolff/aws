@@ -8,8 +8,27 @@ import traceback
 import sys
 import stat
 
-STACK_NAME='bbb'
-# STACK_NAME= ''.join(random.sample(string.lowercase, 3))
+class EC2Stack:
+
+  def __init__(self, stack_name, template_file):
+    self.stack_name = stack_name
+    self.template_file  = template_file
+
+  def create_stack(self):
+    """execute a shell command to create a stack with a master node"""
+    run_command(
+      "cfn-create-stack " + self.stack_name + " -f " + self.template_file)
+
+  def wait_for_completion(self):
+    """wait for stack creation to complete"""
+    for i in range(100):
+      output = run_command("cfn-describe-stacks " + self.stack_name)
+      if "CREATE_COMPLETE" in output:
+        break
+      if "ROLLBACK_COMPLETE" in output:
+        run_command("cfn-describe-stack-events " + self.stack_name)
+        raise Exception('Stack creation error')
+      time.sleep(15)
 
 def run_command(command):
   """run a shell command"""
@@ -24,10 +43,6 @@ def run_command(command):
     output.append(line)
   return "\n".join(output)
 
-def create_stack():
-  """execute a shell command to create a stack with a master node"""
-  return run_command(
-    ["cfn-create-stack " + STACK_NAME + " -f master-node.template"])
 
 def get_identifiers(stack_description):
   """get maste node name"""
@@ -40,14 +55,6 @@ def get_identifiers(stack_description):
   else:
     raise Exception('Could not read Master Node or Security Group names', stack_description)
 
-def wait_for_completion():
-  """wait for stack creation to complete"""
-  for i in range(100):
-    output = run_command(["cfn-describe-stacks " + STACK_NAME])
-    if "CREATE_COMPLETE" in output:
-      break
-    time.sleep(15)
-  get_identifiers(output)
 
 
 def get_output_dir():
@@ -102,35 +109,4 @@ def set_cfn_credentials():
   """write the CFN credentials into .bashrc on remote host"""
   run_ssh_command("echo export CFN_ACCESS_KEY=" + os.environ.get('CFN_ACCESS_KEY') + " >> .bashrc")
   run_ssh_command("echo export CFN_SECRET_KEY=" + os.environ.get('CFN_SECRET_KEY') + " >> .bashrc")
-
-# start creating client stack
-
-# log into master node master and install PM 3
-# get PM configuration from SCM
-# run update on PM so it can configure itself (?)
-# install mcollective
-
-# wait for client to complete
-# log into client and install puppet 3 client 
-# point client to PM server
-# classify client
-# do puppet run on client
-
-# more todo:
-# would be nice to just write the instance name to a file rather than looking it up every time
-# would be nice to create a script to easily ssh to new instance.  hey, that's related to previous statement :-)
- 
-try:
-  create_stack()
-  wait_for_completion()
-  make_output_dir()
-  write_ssh_mn_script()
-  write_scp_mn_script()
-  write_ss_mn_script()
-  wait_for_ssh();
-  set_cfn_credentials()
-  print "Master Node: ", master_node
-  print "Security Group: ", security_group
-except Exception as instance:
-  print traceback.format_exc()
 
