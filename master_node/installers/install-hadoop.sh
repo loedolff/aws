@@ -1,4 +1,3 @@
 cd ~/temp
-wget http://download.nextag.com/apache/hadoop/common/stable/hadoop-1.0.4-1.x86_64.rpm
-sudo yum install -y hadoop-1.0.4-1.x86_64.rpm
-
+wget s3://hll-bootstrap/rpms/hadoop-1.0.4-1.x86_64.rpm
+sudo yum install -y localinstall hadoop-1.0.4-1.x86_64.rpm
