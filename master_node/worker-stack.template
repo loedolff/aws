@@ -60,13 +60,13 @@
     "NetworkAlarmLow": {
      "Type": "AWS::CloudWatch::Alarm",
      "Properties": {
-        "AlarmDescription": "Scale-down if Network < 100 bytes for 25 minutes",
+        "AlarmDescription": "Scale-down if Network < 1000 bytes for 25 minutes",
         "MetricName": "NetworkOut",
         "Namespace": "AWS/EC2",
         "Statistic": "Average",
         "Period": "300",
         "EvaluationPeriods": "5",
-        "Threshold": "100",
+        "Threshold": "1000",
         "AlarmActions": [ { "Ref": "ScaleDownPolicy" } ],
         "Dimensions": [
           {
