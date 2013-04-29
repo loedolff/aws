@@ -78,11 +78,11 @@ def write_ss_mn_script():
   run_ssh_command("mkdir temp"); 
   # write script to copy a local script to remote 'temp' and then execute it
   f = open(get_output_dir() + 'ss-mn.sh', 'w')
-  f.write('scp -i ~/.ssh/mykeypair.pem $1 ec2-user@' + master_node + ":temp/\n")
-  f.write('ssh -t -o "StrictHostKeyChecking no" -i ~/.ssh/mykeypair.pem ' +
-    'ec2-user@' + master_node + ' temp/`basename $1`\n')
-  os.chmod(f.name, stat.S_IRWXU)
+  f.write("DIR=`dirname $0`\n")
+  f.write("$DIR/scp-mn.sh $1\n") 
+  f.write("$DIR/ssh-mn.sh temp/`basename $1`\n")
   f.close()
+  os.chmod(f.name, stat.S_IRWXU)
   
 
 def run_ssh_command(command):
