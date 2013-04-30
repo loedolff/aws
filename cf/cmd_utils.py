@@ -67,7 +67,6 @@ def write_ss_mn_script():
   f.close()
   os.chmod(f.name, stat.S_IRWXU)
   
-
 def run_ssh_command(command):
   """run an ssh command"""
   return run_command('ssh -t -o "StrictHostKeyChecking no" -i ~/.ssh/mykeypair.pem ' + 

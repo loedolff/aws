@@ -1,1 +1,2 @@
-master_node/stacks
+cf/stacks
+**/*.pyc
