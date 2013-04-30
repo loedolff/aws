@@ -43,6 +43,7 @@
         "ImageId" : "ami-ecbe2adc", 
         "InstanceType" : "t1.micro",
         "KeyName" : "mykeypair",
+        "InstanceMonitoring" : "false",
         "SecurityGroups" : [ { "Ref" : "Ec2SecurityGroup" } ]
       }
     },
