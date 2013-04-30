@@ -40,7 +40,7 @@ def make_output_dir():
   if not os.path.exists(get_output_dir()):
     os.makedirs(get_output_dir())
 
-def write_ssh_mn_script():
+def write_ssh_mn_script(node):
   """"write a convenience shell script to log into the master node"""
   f = open(get_output_dir() + 'ssh-mn.sh', 'w')
   f.write('ssh -t -o "StrictHostKeyChecking no" -i ~/.ssh/mykeypair.pem ' +
