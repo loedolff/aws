@@ -65,3 +65,9 @@ class EC2Instance:
     self.write_scp_script()
     self.write_ss_script()
 
+  def write_cfn_keys(self):
+    self.run_ssh_command(
+      "sed -i '/CFN_.*_KEY/d' .bash_profile && "
+      "echo export CFN_ACCESS_KEY=" + os.environ.get('CFN_ACCESS_KEY') + " >> .bash_profile && "
+      "echo export CFN_SECRET_KEY=" + os.environ.get('CFN_SECRET_KEY') + " >> .bash_profile")
+

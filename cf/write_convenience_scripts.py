@@ -7,13 +7,11 @@ import os
 import traceback
 import sys
 import stat
+import shutil
 from cmd_utils import run_command
 from ec2instance import EC2Instance
 
 # TODO: Make cloud formation stack name (the logical-id) a parameter
-
-def write_convenience_scripts(instance):
-  instance.write_all_scripts()  
 
 def get_instances(stack_name):
   """instance name"""
@@ -32,9 +30,12 @@ def get_instances(stack_name):
     print "!!!!! No instances found !!!!!"
     
 def process_stack(stack_name):
+  # clean directory
+  shutil.rmtree("stacks/" + stack_name, ignore_errors = True)
   dns_names = get_instances(stack_name)
   for instance in dns_names:
-    write_convenience_scripts(instance)
+    instance.write_all_scripts()  
+    instance.write_cfn_keys()
 
 try:
   output = run_command('cfn-describe-stacks')

@@ -10,7 +10,7 @@ import stat
 from ec2stack import EC2Stack
 
 try:
-  ec2Stack = EC2Stack('abc', "worker-stack.template")  
+  ec2Stack = EC2Stack('bcd', "worker-stack.template")  
   ec2Stack.create_stack()
   ec2Stack.wait_for_completion()
 
