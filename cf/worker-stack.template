@@ -29,7 +29,7 @@
         "LaunchConfigurationName" : { "Ref" : "LaunchConfig" },
         "DesiredCapacity" : "1",
         "MinSize" : "0",
-        "MaxSize" : "1",
+        "MaxSize" : "2",
         "NotificationConfiguration" : {
           "TopicARN" : "arn:aws:sns:us-west-2:240126051501:NotifyMe",
           "NotificationTypes" : [ "autoscaling:EC2_INSTANCE_LAUNCH","autoscaling:EC2_INSTANCE_LAUNCH_ERROR","autoscaling:EC2_INSTANCE_TERMINATE", "autoscaling:EC2_INSTANCE_TERMINATE_ERROR"]
@@ -82,6 +82,9 @@
   },
 
   "Outputs" : {
+    "AutoScalingGroupName" : {
+      "Value" : { "Ref" : "WorkerGroup" }
+    }
   }
 
 }

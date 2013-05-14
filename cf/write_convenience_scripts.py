@@ -28,8 +28,14 @@ def get_instances(stack_name):
     m = dns_pattern.search(output)
   if not found:
     print "!!!!! No instances found !!!!!"
+
+def write_set_capacity_script(stack_name, auto_scaling_group_name):
+  f = open('stacks/' + stack_name + "/set-desired-capacity.sh", 'w')
+  f.write('as-set-desired-capacity ' + auto_scaling_group_name + ' --desired-capacity $1')
+  os.chmod(f.name, stat.S_IRWXU)
+  f.close()
     
-def process_stack(stack_name):
+def write_instance_scripts(stack_name):
   # clean directory
   shutil.rmtree("stacks/" + stack_name, ignore_errors = True)
   dns_names = get_instances(stack_name)
@@ -39,13 +45,14 @@ def process_stack(stack_name):
 
 try:
   output = run_command('cfn-describe-stacks')
-  p = re.compile(r"STACK\s+([\w-]+)\s+CREATE_COMPLETE")
+  p = re.compile(r"STACK\s+([\w-]+)\s+CREATE_COMPLETE.*AutoScalingGroupName=([\w-]+)\s")
   found = False
   for m in p.finditer(output):
     found = True
     stack_name = m.group(1)
     print ">>>> Processing stack: " + stack_name
-    process_stack(stack_name)
+    write_instance_scripts(stack_name)
+    write_set_capacity_script(stack_name, m.group(2))
   if not found:
     print "!!!!! No stacks found !!!!!"
  
