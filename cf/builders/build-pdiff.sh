@@ -15,6 +15,8 @@ cd FreeImage
 make
 sudo make install
 
+sudo ldconfig
+
 cd /home/ec2-user/dpxdt-1/pdiff
 cmake .
 make
