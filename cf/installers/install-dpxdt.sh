@@ -1,9 +1,13 @@
 # Originally from https://www.djangoproject.com/download/
+# s3cmd get s3://hll-bootstrap/tars/Django-1.5.1.tar.gz  --force
 
-sudo yum -y install git
+# Originally from wget https://phantomjs.googlecode.com/files/phantomjs-1.9.0-linux-x86_64.tar.bz2
+s3cmd get s3://hll-bootstrap/tars/phantomjs-1.9.0-linux-x86_64.tar.bz2 --force
+bzip2 -d phantomjs-1.9.0-linux-x86_64.tar.bz2 
+mkdir -p ~/tools
+tar xf phantomjs-1.9.0-linux-x86_64.tar -C ~/tools/
 
-s3cmd get s3://hll-bootstrap/tars/Django-1.5.1.tar.gz  --force
-
+# Uploaded these by running package.sh and upload.shscripts in dpxdt distribution
 s3cmd get s3://hll-bootstrap/tars/dpxdt-1.zip --force
 s3cmd get s3://hll-bootstrap/tars/flask.zip --force
 s3cmd get s3://hll-bootstrap/tars/flask-wtf.zip --force

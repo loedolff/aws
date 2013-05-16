@@ -22,8 +22,11 @@ class EC2Instance:
   def get_ssh_script(self):
     return 'ssh-' + self.instance_id  + '.sh'
 
-  def get_scp_script(self):
-    return 'scp-' + self.instance_id + '.sh'
+  def get_scp_to_script(self):
+    return 'scp-to-' + self.instance_id + '.sh'
+
+  def get_scp_from_script(self):
+    return 'scp-from-' + self.instance_id + '.sh'
 
   def write_ssh_script(self):
     """"write a convenience shell script to log into the instance"""
@@ -36,10 +39,17 @@ class EC2Instance:
   def run_ssh_command(self, command):
     run_command(self.get_output_dir() + self.get_ssh_script() + ' "' + command + '"');
 
-  def write_scp_script(self):
+  def write_scp_to_script(self):
     """"write a convenience shell script to copy a file to the master instance"""
-    f = open(self.get_output_dir() + self.get_scp_script(), 'w')
+    f = open(self.get_output_dir() + self.get_scp_to_script(), 'w')
     f.write('scp -i ~/.ssh/mykeypair.pem $1 ec2-user@' + self.public_dns_name + ":temp/\n")
+    os.chmod(f.name, stat.S_IRWXU)
+    f.close()
+
+  def write_scp_from_script(self):
+    """"write a convenience shell script to copy a file from the master instance"""
+    f = open(self.get_output_dir() + self.get_scp_from_script(), 'w')
+    f.write('scp -i ~/.ssh/mykeypair.pem ec2-user@' + self.public_dns_name + ":$1 ~/temp/\n")
     os.chmod(f.name, stat.S_IRWXU)
     f.close()
 
@@ -50,7 +60,7 @@ class EC2Instance:
     # write script to copy a local script to remote 'temp' and then execute it
     f = open(self.get_output_dir() + 'ss-' + self.instance_id + '.sh', 'w')
     f.write("DIR=`dirname $0`\n")
-    f.write("$DIR/" + self.get_scp_script() + " $1\n")
+    f.write("$DIR/" + self.get_scp_to_script() + " $1\n")
     f.write("$DIR/" + self.get_ssh_script() + " temp/`basename $1`\n")
     f.close()
     os.chmod(f.name, stat.S_IRWXU)
@@ -58,7 +68,8 @@ class EC2Instance:
   def write_all_scripts(self):
     self.stack.make_output_dir()
     self.write_ssh_script()
-    self.write_scp_script()
+    self.write_scp_to_script()
+    self.write_scp_from_script()
     self.write_ss_script()
 
   def write_cfn_keys(self):
