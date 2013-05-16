@@ -56,7 +56,7 @@ class EC2Instance:
     os.chmod(f.name, stat.S_IRWXU)
 
   def write_all_scripts(self):
-    self.make_output_dir()
+    self.stack.make_output_dir()
     self.write_ssh_script()
     self.write_scp_script()
     self.write_ss_script()
