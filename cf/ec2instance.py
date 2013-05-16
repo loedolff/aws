@@ -11,23 +11,19 @@ from cmd_utils import *
 
 class EC2Instance:
 
-  def __init__(self, stack_name, public_dns_name, instance_id):
-    self.stack_name = stack_name
+  def __init__(self, stack, public_dns_name, instance_id):
+    self.stack = stack
     self.public_dns_name = public_dns_name
     self.instance_id = instance_id
 
   def get_output_dir(self):
-    return 'stacks/' + self.stack_name + '/'
+    return self.stack.get_output_dir()
 
   def get_ssh_script(self):
     return 'ssh-' + self.instance_id  + '.sh'
 
   def get_scp_script(self):
     return 'scp-' + self.instance_id + '.sh'
-
-  def make_output_dir(self):
-    if not os.path.exists(self.get_output_dir()):
-      os.makedirs(self.get_output_dir())
 
   def write_ssh_script(self):
     """"write a convenience shell script to log into the instance"""
