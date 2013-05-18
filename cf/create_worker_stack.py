@@ -12,7 +12,8 @@ from ec2stack import EC2Stack
 STACK_NAME="abc"
 
 try:
-  ec2Stack = EC2Stack(STACK_NAME, "worker-stack.template")  
+  ec2Stack = EC2Stack(STACK_NAME, template_file = "worker-stack.template",
+                      parameters = "ImageId=ami-3f29bf0f")  
   ec2Stack.create_stack()
   ec2Stack.wait_for_completion()
 

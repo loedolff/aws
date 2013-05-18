@@ -1,6 +1,16 @@
 {
   "AWSTemplateFormatVersion" : "2010-09-09",
+
   "Description" : "Worker Stack",
+
+  "Parameters" : {
+    "ImageId" : {
+      "Type" : "String",
+      "Default" : "ami-ecbe2adc",
+      "Description" : "AMI Image ID"
+    }
+  },
+
   "Resources" : {
 
     "Ec2SecurityGroup" : {
@@ -40,7 +50,7 @@
     "LaunchConfig" : {
       "Type" : "AWS::AutoScaling::LaunchConfiguration",
       "Properties" : {
-        "ImageId" : "ami-ecbe2adc", 
+        "ImageId" : { "Ref" : "ImageId" },
         "InstanceType" : "t1.micro",
         "KeyName" : "mykeypair",
         "InstanceMonitoring" : "false",

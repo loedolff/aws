@@ -13,15 +13,18 @@ from cmd_utils import *
 class EC2Stack:
 
   def __init__(self, stack_name, template_file = None, 
-               auto_scaling_group_name = None):
+               auto_scaling_group_name = None, parameters = None):
     self.stack_name = stack_name
     self.template_file  = template_file
     self.auto_scaling_group_name = auto_scaling_group_name
+    self.parameters = parameters
 
   def create_stack(self):
     """execute a shell command to create a stack with a master node"""
-    run_command(
-      "cfn-create-stack " + self.stack_name + " -f " + self.template_file)
+    command = "cfn-create-stack " + self.stack_name + " -f " + self.template_file
+    if (self.parameters is not None):
+      command += " -p \"" + self.parameters + "\""
+    run_command(command)
 
   def wait_for_completion(self):
     """wait for stack creation to complete"""
