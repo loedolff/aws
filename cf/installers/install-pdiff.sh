@@ -8,17 +8,17 @@ s3cmd get s3://hll-bootstrap/tars/pdiff-dist.zip --force
 unzip pdiff-dist.zip
 cd pdiff-dist
 
-install -d //usr/include //usr/lib
+sudo install -d //usr/include //usr/lib
 
 # try without these next time (i think it's only needed for compiling or static linking, which we don't care about)
 # install -m 644 -o root -g root FreeImage.h //usr/include
 # install -m 644 -o root -g root libfreeimage.a //usr/lib
 
-install -m 755 -o root -g root libfreeimage-3.15.4.so //usr/lib
-ln -sf libfreeimage-3.15.4.so //usr/lib/libfreeimage.so.3
-ln -sf libfreeimage.so.3 //usr/lib/libfreeimage.so
+sudo install -m 755 -o root -g root libfreeimage-3.15.4.so //usr/lib
+sudo ln -sf libfreeimage-3.15.4.so //usr/lib/libfreeimage.so.3
+sudo ln -sf libfreeimage.so.3 //usr/lib/libfreeimage.so
 
-ldconfig
+sudo ldconfig
 
 sudo cp perceptualdiff /usr/local/bin/
 
