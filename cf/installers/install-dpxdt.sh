@@ -21,3 +21,7 @@ unzip jinja2.zip
 unzip itsdangerous.zip
 unzip werkzeug.zip
 unzip dpxdt-1.zip
+
+mkdir -p dpxdt-1/tools/
+ln -s /tools/phantomjs-1.9.0-linux-x86_64/bin/phantomjs dpxdt-1/tools/
+ln -s /usr/local/bin/perceptualdiff dpxdt-1/tools/
